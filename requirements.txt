@@ -8,3 +8,4 @@ jinja2==2.7.3
 wtforms==2.0.2
 redis==2.10.3
 git+https://github.com/integricho/hotqueue#egg=hotqueue
+git+https://github.com/integricho/artexin#egg=artexin
