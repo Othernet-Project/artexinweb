@@ -2,7 +2,7 @@
 from unittest import mock
 
 from artexinweb.models import Job, Task
-from artexinweb.tests.models.base import BaseMongoTestCase
+from artexinweb.tests.base import BaseMongoTestCase
 
 
 class TestJobModel(BaseMongoTestCase):
