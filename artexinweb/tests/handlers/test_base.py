@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from unittest import mock
 
-import pytest
-
 from artexinweb.handlers.base import BaseJobHandler
 from artexinweb.models import Job, Task
 from artexinweb.tests.base import BaseMongoTestCase
