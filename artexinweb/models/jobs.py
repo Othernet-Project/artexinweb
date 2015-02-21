@@ -59,6 +59,10 @@ class Task(mongoengine.Document):
         return task
 
     @property
+    def is_processing(self):
+        return self.status == self.PROCESSING
+
+    @property
     def is_finished(self):
         return self.status == self.FINISHED
 
@@ -120,6 +124,14 @@ class Job(mongoengine.Document):
                                   required=True,
                                   help_text="References to subtasks of job.")
     options = mongoengine.DictField(help_text="Additional(free-form) options.")
+
+    @property
+    def is_queued(self):
+        return self.status == self.QUEUED
+
+    @property
+    def is_processing(self):
+        return self.status == self.PROCESSING
 
     @property
     def is_finished(self):
@@ -184,9 +196,12 @@ class Job(mongoengine.Document):
 
     def retry(self):
         """Retry a previously failed job."""
+        self.mark_queued()
+        self.schedule()
+
+    def mark_queued(self):
         self.status = self.QUEUED
         self.save()
-        self.schedule()
 
     def mark_processing(self):
         self.status = self.PROCESSING
