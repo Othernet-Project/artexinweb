@@ -53,10 +53,12 @@ class StandaloneHandler(BaseJobHandler):
         origin = options.get('origin')
         origin_hash = utils.hash_data([origin])
 
+        timestamp = datetime.datetime.utcnow()
+
         meta = {}
         meta['title'] = self.read_title(task.target)
         meta['images'] = self.count_images(task.target)
-        meta['timestamp'] = serialize_datetime(datetime.datetime.utcnow())
+        meta['timestamp'] = serialize_datetime(timestamp)
 
         meta['url'] = origin
         meta['domain'] = urllib.parse.urlparse(origin).netloc
@@ -69,6 +71,8 @@ class StandaloneHandler(BaseJobHandler):
 
         meta['size'] = os.stat(zip_file_path).st_size
         meta['hash'] = origin_hash
+        # overwrite string timestamp with real datetime object
+        meta['timestamp'] = timestamp
 
         return meta
 
