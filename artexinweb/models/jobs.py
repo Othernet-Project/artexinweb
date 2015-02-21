@@ -130,11 +130,11 @@ class Job(mongoengine.Document):
         return self.status == self.ERRED
 
     def save(self, *args, **kwargs):
-        if self.updated:
-            # on creation, the factory `create` method will set the `updated`
-            # field to have the same value as the `scheduled` field. so update
-            # this field only on subsequent saves(which is indicated by whether
-            # it already has a value or not)
+        if not self.updated:
+            # on creation, the updated field should be the same as scheduled
+            self.updated = self.scheduled
+        else:
+            # on subsequent saves, update the updated field
             self.updated = datetime.datetime.utcnow()
 
         return super(Job, self).save(*args, **kwargs)
@@ -161,7 +161,6 @@ class Job(mongoengine.Document):
         job = cls(job_id=job_id,
                   job_type=job_type,
                   scheduled=creation_time,
-                  updated=creation_time,
                   options=kwargs)
 
         job.tasks = [Task.create(job_id, t) for t in targets]
