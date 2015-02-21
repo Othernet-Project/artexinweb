@@ -59,6 +59,10 @@ class Task(mongoengine.Document):
         return task
 
     @property
+    def is_queued(self):
+        return self.status == self.QUEUED
+
+    @property
     def is_processing(self):
         return self.status == self.PROCESSING
 
@@ -69,6 +73,10 @@ class Task(mongoengine.Document):
     @property
     def is_failed(self):
         return self.status == self.FAILED
+
+    def mark_queued(self):
+        self.status = self.QUEUED
+        self.save()
 
     def mark_processing(self):
         self.status = self.PROCESSING

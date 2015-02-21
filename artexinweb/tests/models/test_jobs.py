@@ -126,3 +126,47 @@ class TestJobModel(BaseMongoTestCase):
         assert Job.is_valid_type(Job.STANDALONE) is True
         assert Job.is_valid_type(Job.FETCHABLE) is True
         assert Job.is_valid_type('INVALID') is False
+
+
+class TestTaskModel(BaseMongoTestCase):
+
+    @classmethod
+    def setup_class(cls):
+        cls.job_id = 'a' * 32
+        cls.task_target = 'task_target'
+
+    def test_create(self):
+        task = Task.create(self.job_id, self.task_target)
+
+        assert task.job_id == self.job_id
+        assert task.target == self.task_target
+        assert task.status == Task.QUEUED
+
+    def test_mark_queued(self):
+        task = Task.create(self.job_id, self.task_target)
+
+        task.mark_failed()  # tasks are queued by default, so make it failed
+        assert task.is_queued is False
+        task.mark_queued()
+        assert task.is_queued is True
+
+    def test_mark_processing(self):
+        task = Task.create(self.job_id, self.task_target)
+
+        assert task.is_processing is False
+        task.mark_processing()
+        assert task.is_processing is True
+
+    def test_mark_failed(self):
+        task = Task.create(self.job_id, self.task_target)
+
+        assert task.is_failed is False
+        task.mark_failed()
+        assert task.is_failed is True
+
+    def test_mark_finished(self):
+        task = Task.create(self.job_id, self.task_target)
+
+        assert task.is_finished is False
+        task.mark_finished()
+        assert task.is_finished is True
