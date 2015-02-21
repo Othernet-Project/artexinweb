@@ -82,3 +82,78 @@ class TestBaseJobHandler(BaseMongoTestCase):
 
         calls = [mock.call(task, job.options) for task in job.tasks]
         process_task.assert_has_calls(calls)
+
+    @mock.patch('artexinweb.handlers.base.BaseJobHandler.handle_task')
+    @mock.patch('artexinweb.models.Task.mark_failed')
+    def test_process_task_invalid_target(self, mark_failed, handle_task):
+        task = Task.create(self.job_id, self.targets[0])
+
+        handler = BaseJobHandler()
+        with mock.patch.object(handler, 'is_valid_target', return_value=False):
+            handler.process_task(task, {})
+
+            mark_failed.assert_called_once_with()
+            assert not handle_task.called
+
+    @mock.patch('artexinweb.handlers.base.BaseJobHandler.handle_task_result')
+    @mock.patch('artexinweb.handlers.base.BaseJobHandler.handle_task')
+    @mock.patch('artexinweb.models.Task.mark_failed')
+    def test_process_task_success(self, mark_failed, handle_task,
+                                  handle_task_result):
+        task = Task.create(self.job_id, self.targets[0])
+        options = {}
+        task_result = {'result': 'OK'}
+
+        handle_task.return_value = task_result
+
+        handler = BaseJobHandler()
+        with mock.patch.object(handler, 'is_valid_target', return_value=True):
+            handler.process_task(task, options)
+
+            handle_task.assert_called_once_with(task, options)
+            handle_task_result.assert_called_once_with(task,
+                                                       task_result,
+                                                       options)
+            assert not mark_failed.called
+
+    @mock.patch('artexinweb.handlers.base.BaseJobHandler.handle_task_result')
+    @mock.patch('artexinweb.handlers.base.BaseJobHandler.handle_task')
+    @mock.patch('artexinweb.models.Task.mark_failed')
+    def test_process_task_handle_task_failure(self, mark_failed, handle_task,
+                                              handle_task_result):
+        task = Task.create(self.job_id, self.targets[0])
+        options = {}
+
+        handle_task.side_effect = Exception()
+
+        handler = BaseJobHandler()
+        with mock.patch.object(handler, 'is_valid_target', return_value=True):
+            handler.process_task(task, options)
+
+            handle_task.assert_called_once_with(task, options)
+            assert not handle_task_result.called
+            mark_failed.assert_called_once_with()
+
+    @mock.patch('artexinweb.handlers.base.BaseJobHandler.handle_task_result')
+    @mock.patch('artexinweb.handlers.base.BaseJobHandler.handle_task')
+    @mock.patch('artexinweb.models.Task.mark_failed')
+    def test_process_task_handle_task_result_failure(self,
+                                                     mark_failed,
+                                                     handle_task,
+                                                     handle_task_result):
+        task = Task.create(self.job_id, self.targets[0])
+        options = {}
+        task_result = {'result': 'OK'}
+
+        handle_task.return_value = task_result
+        handle_task_result.side_effect = Exception()
+
+        handler = BaseJobHandler()
+        with mock.patch.object(handler, 'is_valid_target', return_value=True):
+            handler.process_task(task, options)
+
+            handle_task.assert_called_once_with(task, options)
+            handle_task_result.assert_called_once_with(task,
+                                                       task_result,
+                                                       options)
+            mark_failed.assert_called_once_with()
