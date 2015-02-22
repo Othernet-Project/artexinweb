@@ -10,8 +10,8 @@ import urllib
 
 from bs4 import BeautifulSoup
 
-from artexin.extract import get_title
-from artexin.pack import zipdir, serialize_datetime
+from artexin import extract
+from artexin import pack
 
 from artexinweb import settings, utils
 from artexinweb.decorators import registered
@@ -42,7 +42,7 @@ class StandaloneHandler(BaseJobHandler):
         zippable_dir = os.path.join(temp_dir, zip_filename)
         shutil.copytree(target_path, zippable_dir)
         # zip the newly prepared folder
-        zipdir(zip_file_path, zippable_dir)
+        pack.zipdir(zip_file_path, zippable_dir)
         # remove the temp folder (containing the previously zipped folder),
         # since the zip file is created, it is no longer needed
         shutil.rmtree(temp_dir)
@@ -58,7 +58,7 @@ class StandaloneHandler(BaseJobHandler):
         meta = {}
         meta['title'] = self.read_title(task.target)
         meta['images'] = self.count_images(task.target)
-        meta['timestamp'] = serialize_datetime(timestamp)
+        meta['timestamp'] = pack.serialize_datetime(timestamp)
 
         meta['url'] = origin
         meta['domain'] = urllib.parse.urlparse(origin).netloc
@@ -85,7 +85,7 @@ class StandaloneHandler(BaseJobHandler):
         with open(os.path.join(target, html_filename), 'r') as html_file:
             soup = BeautifulSoup(html_file.read())
 
-        return get_title(soup)
+        return extract.get_title(soup)
 
     def count_images(self, target):
         is_image = lambda filename: imghdr.what(os.path.join(target, filename))
