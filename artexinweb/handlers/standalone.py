@@ -8,7 +8,7 @@ import shutil
 import tempfile
 import urllib
 
-from bs4 import BeautifulSoup
+import bs4
 
 from artexin import extract
 from artexin import pack
@@ -83,7 +83,7 @@ class StandaloneHandler(BaseJobHandler):
                             if is_html_file(filename)]
 
         with open(os.path.join(target, html_filename), 'r') as html_file:
-            soup = BeautifulSoup(html_file.read())
+            soup = bs4.BeautifulSoup(html_file.read())
 
         return extract.get_title(soup)
 

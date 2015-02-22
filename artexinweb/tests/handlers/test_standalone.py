@@ -99,7 +99,7 @@ class TestStandaloneHandler(BaseMongoTestCase):
         stat.return_value = stat_result
 
         m_open = mock.mock_open()
-        with mock.patch('builtins.open', m_open, create=True):
+        with mock.patch('builtins.open', m_open):
             result = handler.handle_task(task, options)
 
         info_path = os.path.join(task.target, 'info.json')
@@ -144,3 +144,45 @@ class TestStandaloneHandler(BaseMongoTestCase):
         assert task.title == result['title']
         assert task.images == result['images']
         assert task.timestamp == result['timestamp']
+
+    @mock.patch('os.walk')
+    @mock.patch('imghdr.what')
+    def test_count_images(self, what, walk):
+        image_paths = [(None, None, ['test.gif']),
+                       (None, None, ['another.jpg']),
+                       (None, None, ['catch.jpg'])]
+        walk.return_value = image_paths
+        what.return_value = True
+
+        handler = StandaloneHandler()
+        result = handler.count_images(self.target)
+
+        assert result == len(image_paths)
+
+    @mock.patch('artexin.extract.get_title')
+    @mock.patch('bs4.BeautifulSoup')
+    @mock.patch('os.listdir')
+    def test_read_title(self, listdir, beautiful_soup, get_title):
+        listdir.return_value = ['test.jpg',
+                                'another.gif',
+                                'script.js',
+                                'start.html']
+        title = 'page title'
+        get_title.return_value = title
+        beautiful_soup.return_value = 'soup'
+
+        handler = StandaloneHandler()
+
+        m_open = mock.mock_open()
+        with mock.patch('builtins.open', m_open):
+            result = handler.read_title(self.target)
+
+        html_path = os.path.join(self.target, 'start.html')
+        m_open.assert_called_once_with(html_path, 'r')
+
+        file_handle = m_open()
+        file_handle.read.assert_called_once_with()
+
+        get_title.assert_called_once_with(beautiful_soup.return_value)
+
+        assert result == title
