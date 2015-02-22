@@ -6,6 +6,7 @@ from unittest import mock
 from artexinweb.handlers.fetchable import FetchableHandler
 from artexinweb.models import Task
 from artexinweb.tests.base import BaseMongoTestCase
+from artexinweb.tests.mocks import mock_bottle_config
 
 
 class TestFetchableHandler(BaseMongoTestCase):
@@ -71,10 +72,9 @@ class TestFetchableHandler(BaseMongoTestCase):
         assert task.images == result['images']
         assert task.timestamp == result['timestamp']
 
-    @mock.patch('artexinweb.settings.BOTTLE_CONFIG')
     @mock.patch('artexin.pack.collect')
     @mock.patch('artexin.preprocessor_mappings.get_preps')
-    def test_handle_task(self, get_preps, collect, config):
+    def test_handle_task(self, get_preps, collect):
         task = Task.create(self.job_id, self.target)
         options = {'javascript': True, 'extract': True}
 
@@ -85,10 +85,11 @@ class TestFetchableHandler(BaseMongoTestCase):
         collect.return_value = collect_result
 
         mock_settings = {'artexin.out_dir': '/test/out'}
-        config.__getitem__ = lambda inst, key: mock_settings.__getitem__(key)
 
         handler = FetchableHandler()
-        result = handler.handle_task(task, options)
+        with mock_bottle_config('artexinweb.settings.BOTTLE_CONFIG',
+                                mock_settings):
+            result = handler.handle_task(task, options)
 
         assert result == collect_result
 
