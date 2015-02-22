@@ -2,8 +2,8 @@
 import logging
 import urllib
 
-from artexin.pack import collect
-from artexin.preprocessor_mappings import get_preps
+from artexin import pack
+from artexin import preprocessor_mappings
 
 from artexinweb import settings
 from artexinweb.decorators import registered
@@ -27,11 +27,14 @@ class FetchableHandler(BaseJobHandler):
             return True
 
     def handle_task(self, task, options):
-        return collect(task.target,
-                       prep=get_preps(task.target),
-                       base_dir=settings.BOTTLE_CONFIG['artexin.out_dir'],
-                       javascript=options.get('javascript', False),
-                       do_extract=options.get('extract', False))
+        preps = preprocessor_mappings.get_preps(task.target)
+        out_dir = settings.BOTTLE_CONFIG.get('artexin.out_dir', '')
+
+        return pack.collect(task.target,
+                            prep=preps,
+                            base_dir=out_dir,
+                            javascript=options.get('javascript', False),
+                            do_extract=options.get('extract', False))
 
     def handle_task_result(self, task, result, options):
         error = result.get('error')

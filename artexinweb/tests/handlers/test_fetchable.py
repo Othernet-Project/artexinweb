@@ -3,6 +3,7 @@ import datetime
 
 from unittest import mock
 
+from artexinweb import settings
 from artexinweb.handlers.fetchable import FetchableHandler
 from artexinweb.models import Task
 from artexinweb.tests.base import BaseMongoTestCase
@@ -70,3 +71,29 @@ class TestFetchableHandler(BaseMongoTestCase):
         assert task.title == result['title']
         assert task.images == result['images']
         assert task.timestamp == result['timestamp']
+
+    @mock.patch('artexin.pack.collect')
+    @mock.patch('artexin.preprocessor_mappings.get_preps')
+    def test_handle_task(self, get_preps, collect):
+        task = Task.create(self.job_id, self.target)
+        options = {'javascript': True, 'extract': True}
+
+        fake_preps = ['prep1']
+        get_preps.return_value = fake_preps
+
+        collect_result = {'meta': 'so meta'}
+        collect.return_value = collect_result
+
+        handler = FetchableHandler()
+        result = handler.handle_task(task, options)
+
+        assert result == collect_result
+
+        get_preps.assert_called_once_with(task.target)
+
+        out_dir = settings.BOTTLE_CONFIG.get('artexin.out_dir', '')
+        collect.assert_called_once_with(task.target,
+                                        prep=fake_preps,
+                                        base_dir=out_dir,
+                                        javascript=True,
+                                        do_extract=True)
