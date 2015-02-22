@@ -4,6 +4,8 @@ from os.path import dirname, join
 
 import bottle
 
+from artexinweb import exceptions
+
 
 WEBAPP_ROOT = dirname(__file__)
 VIEW_ROOT = join(WEBAPP_ROOT, 'views')
@@ -14,6 +16,9 @@ CONFIG_PATH = environ.get('CONFIG_PATH', DEFAULT_CONFIG_PATH)
 
 BOTTLE_CONFIG = bottle.ConfigDict()
 BOTTLE_CONFIG.load_config(CONFIG_PATH)
+
+if not BOTTLE_CONFIG:
+    raise exceptions.ImproperlyConfigured('Empty or no configuration found.')
 
 LOGGING = {
     'version': 1,
