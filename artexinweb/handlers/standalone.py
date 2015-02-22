@@ -50,7 +50,7 @@ class StandaloneHandler(BaseJobHandler):
         return zip_file_path
 
     def handle_task(self, task, options):
-        origin = options.get('origin')
+        origin = options['origin']
         origin_hash = utils.hash_data([origin])
 
         timestamp = datetime.datetime.utcnow()
