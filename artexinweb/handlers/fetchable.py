@@ -27,12 +27,9 @@ class FetchableHandler(BaseJobHandler):
             return True
 
     def handle_task(self, task, options):
-        preps = preprocessor_mappings.get_preps(task.target)
-        out_dir = settings.BOTTLE_CONFIG.get('artexin.out_dir', '')
-
         return pack.collect(task.target,
-                            prep=preps,
-                            base_dir=out_dir,
+                            prep=preprocessor_mappings.get_preps(task.target),
+                            base_dir=settings.BOTTLE_CONFIG['artexin.out_dir'],
                             javascript=options.get('javascript', False),
                             do_extract=options.get('extract', False))
 

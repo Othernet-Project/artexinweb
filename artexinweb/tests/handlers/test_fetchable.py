@@ -3,7 +3,6 @@ import datetime
 
 from unittest import mock
 
-from artexinweb import settings
 from artexinweb.handlers.fetchable import FetchableHandler
 from artexinweb.models import Task
 from artexinweb.tests.base import BaseMongoTestCase
@@ -72,9 +71,10 @@ class TestFetchableHandler(BaseMongoTestCase):
         assert task.images == result['images']
         assert task.timestamp == result['timestamp']
 
+    @mock.patch('artexinweb.settings.BOTTLE_CONFIG')
     @mock.patch('artexin.pack.collect')
     @mock.patch('artexin.preprocessor_mappings.get_preps')
-    def test_handle_task(self, get_preps, collect):
+    def test_handle_task(self, get_preps, collect, config):
         task = Task.create(self.job_id, self.target)
         options = {'javascript': True, 'extract': True}
 
@@ -84,6 +84,9 @@ class TestFetchableHandler(BaseMongoTestCase):
         collect_result = {'meta': 'so meta'}
         collect.return_value = collect_result
 
+        mock_settings = {'artexin.out_dir': '/test/out'}
+        config.__getitem__ = lambda inst, key: mock_settings.__getitem__(key)
+
         handler = FetchableHandler()
         result = handler.handle_task(task, options)
 
@@ -91,7 +94,7 @@ class TestFetchableHandler(BaseMongoTestCase):
 
         get_preps.assert_called_once_with(task.target)
 
-        out_dir = settings.BOTTLE_CONFIG.get('artexin.out_dir', '')
+        out_dir = mock_settings['artexin.out_dir']
         collect.assert_called_once_with(task.target,
                                         prep=fake_preps,
                                         base_dir=out_dir,
