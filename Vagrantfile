@@ -14,11 +14,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "artexin_dev" do |artexin_dev|
     artexin_dev.vm.box = "ubuntu/trusty64"
 
-    artexin_dev.vm.network "forwarded_port", guest: 80, host: 8080
+    artexin_dev.vm.network "forwarded_port", guest: 80, host: 8000
     artexin_dev.vm.network "forwarded_port", guest: 9090, host: 9090
 
     artexin_dev.vm.provision "ansible" do |ansible|
-      ansible.playbook = "deploy/vagrant.yml"
+      ansible.playbook = "deploy/artexin.yml"
       ansible.groups = {
         "vagrant" => ["artexin_dev"]
       }

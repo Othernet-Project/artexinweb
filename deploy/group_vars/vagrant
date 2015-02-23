@@ -1,5 +1,3 @@
-root_domain_name: artexin.local
-
 requirements_file: "{{ app_code_dir }}/requirements.txt"
 
 config_path: "{{ webapp_conf_dir }}/dev.ini"
@@ -7,3 +5,11 @@ config_path: "{{ webapp_conf_dir }}/dev.ini"
 code_version: develop
 
 database_uri: mongodb://localhost/artexinweb
+
+ufw_open_ports:
+  - port: 22
+    proto: 'tcp'
+  - port: 80
+    proto: 'tcp'
+  - port: 9090
+    proto: 'tcp'

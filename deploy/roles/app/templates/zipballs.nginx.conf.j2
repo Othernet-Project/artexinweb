@@ -1,0 +1,13 @@
+server {
+  listen 80 default_server;
+  listen [::]:80 default_server ipv6only=on;
+
+  server_name localhost;
+
+  location / {
+    root /srv/zipballs;
+    autoindex on;
+    index index.html index.htm;
+  }
+}
+

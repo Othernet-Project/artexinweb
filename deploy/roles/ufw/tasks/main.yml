@@ -1,0 +1,20 @@
+---
+
+
+- name: install ufw
+  apt:
+    name: ufw
+    state: present
+
+- name: allow ssh through firewall
+  ufw:
+    proto: "{{ item.proto }}"
+    port: "{{ item.port }}"
+    rule: allow
+  with_items: ufw_open_ports
+
+- name: set ufw policy
+  ufw:
+    state: enabled
+    direction: incoming
+    policy: deny

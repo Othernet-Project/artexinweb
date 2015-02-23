@@ -1,5 +1,3 @@
-root_domain_name: artexin.outernet.is
-
 requirements_file: "{{ app_code_dir }}/requirements.txt"
 
 config_path: "{{ webapp_conf_dir }}/prod.ini"
@@ -7,3 +5,9 @@ config_path: "{{ webapp_conf_dir }}/prod.ini"
 code_version: master
 
 database_uri: mongodb://localhost/artexinweb
+
+ufw_open_ports:
+  - port: 22
+    proto: 'tcp'
+  - port: 80
+    proto: 'tcp'

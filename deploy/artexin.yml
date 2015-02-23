@@ -1,0 +1,28 @@
+---
+# This playbook deploys the whole application stack in this site.
+
+- name: install system dependencies
+  hosts: "{{ remote_host | default('vagrant') }}"
+  remote_user: "{{ remote_username | default('vagrant') }}"
+  sudo: yes
+
+  roles:
+    - ufw
+    - mongodb
+    - phantomjs
+    - redis
+
+- name: create deploy user
+  hosts: "{{ remote_host | default('vagrant') }}"
+  remote_user: "{{ remote_username | default('vagrant') }}"
+  sudo: yes
+
+  roles:
+    - usersetup
+
+- name: deploy app
+  hosts: "{{ remote_host | default('vagrant') }}"
+  remote_user: "{{ remote_username | default('vagrant') }}"
+
+  roles:
+    - app

@@ -1,11 +1,22 @@
 ---
 
 - name: write nginx configuration
-  template: src=nginx.conf.j2 dest=/etc/nginx/sites-available/{{ app_name }}.conf
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/nginx/sites-available/{{ item }}"
+  with_items:
+    - zipballs.nginx.conf
+    - app.nginx.conf
   sudo: yes
 
 - name: enable nginx configuration
-  file: src=/etc/nginx/sites-available/{{ app_name }}.conf dest=/etc/nginx/sites-enabled/{{ app_name }}.conf state=link
+  file:
+    src: "/etc/nginx/sites-available/{{ item }}"
+    dest: "/etc/nginx/sites-enabled/{{ item }}"
+    state: link
+  with_items:
+    - zipballs.nginx.conf
+    - app.nginx.conf
   sudo: yes
 
 - name: check if nginx has default symbolic linked website file
