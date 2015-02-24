@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import sys
+
 from os import environ
 from os.path import dirname, join
 
@@ -25,7 +27,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'standard': {
-            'format': '%(message)s'
+            'format': '%(asctime)s [%(process)s] [%(levelname)s] %(message)s'
         },
     },
     'handlers': {
@@ -33,6 +35,7 @@ LOGGING = {
             'level': 'INFO',
             'formatter': 'standard',
             'class': 'logging.StreamHandler',
+            'stream': sys.stdout
         },
     },
     'loggers': {
