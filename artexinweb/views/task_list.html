@@ -16,6 +16,7 @@
               <th>Images</th>
               <th>Timestamp</th>
               <th>Status</th>
+              <th>Link</th>
             </tr>
           </thead>
           <tbody>
@@ -28,6 +29,7 @@
               <td>{{ task.images }}</td>
               <td>{{ task.timestamp }}</td>
               <td>{{ task.status }}</td>
+              <td>{% if task.is_finished %}<a href="{{ task.download_link }}">Download</a>{% endif %}</td>
             </tr>
           {% endfor %}
           </tbody>

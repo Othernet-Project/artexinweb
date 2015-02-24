@@ -1,3 +1,5 @@
+zipball_url_template: "http://localhost:8000/{0}.zip"
+
 requirements_file: "{{ app_code_dir }}/requirements.txt"
 
 config_path: "{{ webapp_conf_dir }}/dev.ini"

@@ -16,7 +16,6 @@ code_repository: https://github.com/integricho/artexinweb.git
 app_code_dir: "/home/{{ deploy_user }}/{{ app_name }}"
 webapp_dir: "{{ app_code_dir }}/artexinweb"
 webapp_conf_dir: "{{ webapp_dir }}/confs"
-
 virtualenv_dir: "/home/{{ deploy_user }}/.virtualenvs/{{ app_name }}"
 
 bottle_env_vars: {

@@ -3,7 +3,7 @@ import datetime
 
 import mongoengine
 
-from artexinweb import rqueue, utils
+from artexinweb import rqueue, utils, settings
 
 
 MD5_LENGTH = 32
@@ -73,6 +73,11 @@ class Task(mongoengine.Document):
     @property
     def is_failed(self):
         return self.status == self.FAILED
+
+    @property
+    def download_link(self):
+        url_template = settings.BOTTLE_CONFIG['artexin.zipball_url_template']
+        return url_template.format(self.md5)
 
     def mark_queued(self):
         self.status = self.QUEUED
