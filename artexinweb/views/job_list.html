@@ -36,7 +36,7 @@
               <td>{{ job.updated }}</td>
               <td>
                 <a href="/jobs/{{ job.job_id }}/tasks/">Show tasks</a>
-                {% if not job.is_finished %}
+                {% if job.is_erred %}
                 <a href="/jobs/{{ job.job_id }}/actions/retry/">Retry</a>
                 {% endif %}
               </td>
