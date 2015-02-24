@@ -20,7 +20,8 @@ DAEMON_GROUP={{ deploy_group }}
 DAEMON_WORKING_DIR={{ daemon_working_dir }}
 DAEMON_LOG_DIR={{ daemon_log_dir }}
 PIDFILE="$DAEMON_WORKING_DIR/$NAME.pid"
-DAEMON_ARGS="--daemon /etc/circus.ini"
+CONFIG={{ circus_config_dir }}/circusd.ini
+DAEMON_ARGS="--daemon $CONFIG"
 SCRIPTNAME=/etc/init.d/$NAME
 
 mkdir -p $DAEMON_WORKING_DIR
@@ -47,13 +48,13 @@ do_start() {
     fi
 
     log_daemon_msg "Starting circusd daemon: "
-    start-stop-daemon --start --quiet --background --pidfile $PIDFILE --chuid $DAEMON_USER:$DAEMON_GROUP --chdir $DAEMON_WORKING_DIR --exec $DAEMON -- $DAEMON_ARGS
+    start-stop-daemon --start --quiet --pidfile $PIDFILE --chuid $DAEMON_USER:$DAEMON_GROUP --chdir $DAEMON_WORKING_DIR --exec $DAEMON -- $DAEMON_ARGS
     log_end_msg $?
 }
 
 do_stop() {
     log_begin_msg "Stopping $DESC ..."
-    start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE --retry=TERM/30/KILL/5
+    start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE
     RC=$?
     [ $RC -eq 0 ] && rm -f $PIDFILE
     log_end_msg $RC

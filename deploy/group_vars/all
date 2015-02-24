@@ -2,6 +2,7 @@ deploy_user: artexin
 deploy_group: artexin
 nginx_group: www-data
 
+circus_config_dir: /etc/circus
 daemon_working_dir: /var/run/circus
 daemon_log_dir: /var/log/circus
 static_root: /srv/static

@@ -105,10 +105,21 @@
     state: link
   sudo: yes
 
+- name: check if circus config directory exists
+  stat: "path={{ circus_config_dir }}"
+  register: circus_dir
+
+- name: create circus config directory
+  file:
+    path: "{{ circus_config_dir }}"
+    state: directory
+  when: circus_dir.stat.isdir is not defined
+  sudo: yes
+
 - name: setup circus
   template:
-    src: circus.ini.j2
-    dest: /etc/circus.ini
+    src: circusd.ini.j2
+    dest: "{{ circus_config_dir }}/circusd.ini"
   sudo: yes
 
 - name: setup circus init script
