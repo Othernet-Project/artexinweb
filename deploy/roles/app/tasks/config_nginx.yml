@@ -5,7 +5,6 @@
     src: "{{ item }}.j2"
     dest: "/etc/nginx/sites-available/{{ item }}"
   with_items:
-    - zipballs.nginx.conf
     - app.nginx.conf
   sudo: yes
 
@@ -15,7 +14,6 @@
     dest: "/etc/nginx/sites-enabled/{{ item }}"
     state: link
   with_items:
-    - zipballs.nginx.conf
     - app.nginx.conf
   sudo: yes
 
