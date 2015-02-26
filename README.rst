@@ -51,7 +51,7 @@ To stop the server, SSH into the vagrant VM::
 
     vagrant ssh
 
-And issue this command:
+And issue this command::
 
     sudo service circusd stop
 
