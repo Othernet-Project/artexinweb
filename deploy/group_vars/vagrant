@@ -13,5 +13,8 @@ ufw_open_ports:
     proto: 'tcp'
   - port: 80
     proto: 'tcp'
-  - port: 9090
+  - port: 8080
     proto: 'tcp'
+
+nginx_listen_address: 0.0.0.0
+nginx_listen_port: 8080

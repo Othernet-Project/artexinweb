@@ -1,5 +1,5 @@
 server {
-  listen 127.0.0.1:8080;
+  listen {{ nginx_listen_address }}:{{ nginx_listen_port }};
 
   server_name localhost;
 
