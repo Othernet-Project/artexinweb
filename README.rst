@@ -65,7 +65,7 @@ process manager::
     sudo service circusd start
 
 This method is used in production, and it's not really helpful during
-development. The other way is through simple shell scripts. For starting the web
+development. The other way is through simple shell scripts. To start the web
 application::
 
     startapp
@@ -75,7 +75,8 @@ Similarly, to start a background worker, issue this command::
     startworker
 
 Running the application in this mode will log to stdout, and will automatically
-reload when the source code is changed.
+reload when the source code is changed. Note that the app in this case will be
+running on port 9090.
 The configuration settings for the application are located in ``confs/dev.ini``.
 
 Known issues

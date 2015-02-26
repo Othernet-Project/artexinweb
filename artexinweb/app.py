@@ -24,4 +24,4 @@ utils.discover(controllers)
 
 
 if __name__ == '__main__':
-    application.run(debug=True, reloader=True, host='0.0.0.0', port=8080)
+    application.run(debug=True, reloader=True, host='0.0.0.0', port=9090)
