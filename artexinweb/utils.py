@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import hashlib
+import os
 import pkgutil
 
 
@@ -17,3 +18,7 @@ def hash_data(*args):
         md5.update(bytes(str(data), 'utf-8'))
 
     return md5.hexdigest()
+
+
+def get_extension(filepath):
+    return os.path.splitext(filepath)[-1].strip(".").lower()

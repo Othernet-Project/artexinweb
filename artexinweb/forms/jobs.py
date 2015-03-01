@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
-import os
-
 from bottle import MultiDict
 
 from wtforms import fields
 from wtforms import form
 from wtforms import validators
 
-from artexinweb import settings
+from artexinweb import settings, utils
 
 
 def check_extension(form, field):
-    filename = field.data.filename
-    ext = os.path.splitext(filename)[-1].strip(".").lower()
+    ext = utils.get_extension(field.data.filename)
 
     valid = settings.BOTTLE_CONFIG.get('web.allowed_upload_extensions',
                                        'zip').split(',')
