@@ -1,14 +1,31 @@
 # -*- coding: utf-8 -*-
+import os
+
 from bottle import MultiDict
 
 from wtforms import fields
 from wtforms import form
 from wtforms import validators
 
+from artexinweb import settings
+
+
+def check_extension(form, field):
+    filename = field.data.filename
+    ext = os.path.splitext(filename)[-1].strip(".").lower()
+
+    valid = settings.BOTTLE_CONFIG.get('web.allowed_upload_extensions',
+                                       'zip').split(',')
+
+    if ext not in valid:
+        msg = "Only {0} files are allowed.".format(",".join(valid))
+        raise validators.ValidationError(msg)
+
 
 class StandaloneJobForm(form.Form):
     origin = fields.StringField(validators=[validators.URL(require_tld=True)])
-    files = fields.FileField(validators=[validators.InputRequired()])
+    files = fields.FileField(validators=[validators.InputRequired(),
+                                         check_extension])
 
 
 class URLListField(fields.TextAreaField):

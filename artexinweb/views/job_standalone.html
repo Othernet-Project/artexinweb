@@ -12,7 +12,7 @@
         <div class="form-group {% if form.errors.files %}has-error{% endif %}">
           <label for="files" class="control-label col-xs-2">Files:</label>
           <div class="col-xs-10">
-            {{ form.files(multiple="true") }}
+            {{ form.files(multiple="true", accept="application/zip") }}
             {% for err_msg in form.errors.files %}
             <span class="help-block">{{ err_msg }}</span>
             {% endfor %}

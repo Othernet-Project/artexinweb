@@ -49,14 +49,17 @@ class JobController(object):
     def standalone(cls, job_type, form):
         folder_name = str(uuid.uuid4())
         media_root = settings.BOTTLE_CONFIG['web.media_root']
-        upload_path = os.path.join(media_root, folder_name)
+        upload_dir = os.path.join(media_root, folder_name)
 
-        os.makedirs(upload_path)
+        os.makedirs(upload_dir)
 
+        targets = []
         for uploaded_file in bottle.request.files.getlist('files'):
+            upload_path = os.path.join(upload_dir, uploaded_file.filename)
             uploaded_file.save(upload_path)
+            targets.append(upload_path)
 
-        Job.create(targets=[upload_path],
+        Job.create(targets=targets,
                    job_type=job_type,
                    origin=form.origin.data)
         return bottle.redirect('/jobs/')
