@@ -3,3 +3,7 @@
 
 class ImproperlyConfigured(Exception):
     pass
+
+
+class TaskHandlingError(Exception):
+    pass
