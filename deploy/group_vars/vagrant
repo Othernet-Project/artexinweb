@@ -1,3 +1,6 @@
+deploy_user: vagrant
+deploy_group: vagrant
+
 zipball_url_template: "http://localhost:8000/{0}.zip"
 
 requirements_file: "{{ app_code_dir }}/requirements.txt"

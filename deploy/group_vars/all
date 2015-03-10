@@ -1,5 +1,3 @@
-deploy_user: artexin
-deploy_group: artexin
 nginx_group: www-data
 
 circus_config_dir: /etc/circus

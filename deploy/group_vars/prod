@@ -1,3 +1,6 @@
+deploy_user: artexin
+deploy_group: artexin
+
 zipball_url_template: "http://archive.outernet.is/{0}.zip"
 
 requirements_file: "{{ app_code_dir }}/requirements.txt"
