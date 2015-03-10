@@ -30,7 +30,7 @@ def jobs_list():
             'statuses': Job.STATUSES}
 
 
-class JobController(object):
+class CreateJobController(object):
 
     forms = {
         Job.FETCHABLE: FetchableJobForm,
@@ -64,19 +64,24 @@ class JobController(object):
                    origin=form.origin.data)
         return bottle.redirect('/jobs/')
 
+    @classmethod
+    def get_handler(cls, job_type):
+        return getattr(cls, job_type)
+
 
 @bottle.post('/jobs/')
 def jobs_create():
     job_type = bottle.request.forms.get('type')
 
     if Job.is_valid_type(job_type):
-        form_cls = JobController.forms[job_type]
+        form_cls = CreateJobController.forms[job_type]
         form_data = bottle.request.forms.decode()
         form_data.update(bottle.request.files)
         form = form_cls(form_data)
 
         if form.validate():
-            return getattr(JobController, job_type.lower())(job_type, form)
+            handler = CreateJobController.get_handler(job_type.lower())
+            return handler(job_type, form)
 
         template_name = 'job_{0}.html'.format(job_type.lower())
         return bottle.jinja2_template(template_name,
@@ -90,7 +95,7 @@ def jobs_create():
 def jobs_new():
     job_type = bottle.request.query.get('type')
     if Job.is_valid_type(job_type):
-        form_cls = JobController.forms[job_type]
+        form_cls = CreateJobController.forms[job_type]
         form = form_cls()
 
         return bottle.jinja2_template('job_{0}.html'.format(job_type.lower()),
