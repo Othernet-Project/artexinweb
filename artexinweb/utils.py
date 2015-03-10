@@ -39,9 +39,9 @@ def collect_locales():
                     locale.display_name == locale.english_name):
                 label = locale.english_name
             else:
-                label = '{0} ({1})'.format(locale.display_name,
-                                           locale.english_name)
+                label = '{0} ({1})'.format(locale.english_name,
+                                           locale.display_name)
 
             languages.append((lang_code, label))
 
-    return languages
+    return sorted(languages, key=lambda x: x[1])
