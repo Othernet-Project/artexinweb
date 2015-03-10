@@ -8,6 +8,39 @@ from wtforms import validators
 from artexinweb import settings, utils
 
 
+LICENSES = (
+    ('CC-BY', "Creative Commons Attribution"),
+    ('CC-BY-ND', "Creative Commons Attribution-NoDerivs"),
+    ('CC-BY-NC', "Creative Commons Attribution-NonCommercial"),
+    ('CC-BY-ND-NC', "Creative Commons Attribution-NonCommercial-NoDerivs"),
+    ('CC-BY-SA', "Creative Commons Attribution-ShareAlike"),
+    ('CC-BY-NC-SA', "Creative Commons Attribution-NonCommercial-ShareAlike"),
+    ('GFDL', "GNU Free Documentation License"),
+    ('OPL', "Open Publication License"),
+    ('OCL', "Open Content License"),
+    ('ADL', "Against DRM License"),
+    ('FAL', "Free Art License"),
+    ('PD', "Public Domain"),
+    ('OF', "Other free license"),
+    ('ARL', "All rights reserved"),
+    ('ON', "Other non-free license"),
+)
+
+
+class MetadataForm(form.Form):
+    language = fields.SelectField(choices=utils.collect_locales())
+    license = fields.SelectField(choices=LICENSES)
+    archive = fields.StringField()
+    is_partner = fields.BooleanField(default=False)
+    partner = fields.StringField()
+    is_sponsored = fields.BooleanField(default=False)
+    keep_formatting = fields.BooleanField(default=False)
+
+    def validate_partner(self, field):
+        if self.is_partner.data and not field.data:
+            raise validators.ValidationError("A partner must be specified")
+
+
 def check_extension(form, field):
     ext = utils.get_extension(field.data.filename)
 
@@ -19,7 +52,7 @@ def check_extension(form, field):
         raise validators.ValidationError(msg)
 
 
-class StandaloneJobForm(form.Form):
+class StandaloneJobForm(MetadataForm):
     origin = fields.StringField(validators=[validators.URL(require_tld=True)])
     files = fields.FileField(validators=[validators.InputRequired(),
                                          check_extension])
@@ -55,7 +88,7 @@ class URLListField(fields.TextAreaField):
                 raise validators.ValidationError("Invalid URL(s).")
 
 
-class FetchableJobForm(form.Form):
+class FetchableJobForm(MetadataForm):
     urls = URLListField(validators=[validators.InputRequired()])
     javascript = fields.BooleanField(validators=[validators.optional()],
                                      default=True)

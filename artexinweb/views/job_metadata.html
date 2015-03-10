@@ -1,0 +1,57 @@
+<div class="form-group {% if form.errors.language %}has-error{% endif %}">
+  <label for="language" class="control-label col-xs-2">Language:</label>
+  <div class="col-xs-10">
+    {{ form.language(class="form-control") }}
+    {% for err_msg in form.errors.language %}
+    <span class="help-block">{{ err_msg }}</span>
+    {% endfor %}
+  </div>
+</div>
+<div class="form-group {% if form.errors.license %}has-error{% endif %}">
+  <label for="license" class="control-label col-xs-2">License:</label>
+  <div class="col-xs-10">
+    {{ form.license(class="form-control") }}
+    {% for err_msg in form.errors.license %}
+    <span class="help-block">{{ err_msg }}</span>
+    {% endfor %}
+  </div>
+</div>
+<div class="form-group {% if form.errors.archive %}has-error{% endif %}">
+  <label for="archive" class="control-label col-xs-2">Archive:</label>
+  <div class="col-xs-10">
+    {{ form.archive(class="form-control") }}
+    {% for err_msg in form.errors.archive %}
+    <span class="help-block">{{ err_msg }}</span>
+    {% endfor %}
+  </div>
+</div>
+<div class="form-group">
+  <div class="col-xs-offset-2 col-xs-10">
+    <div class="checkbox">
+      <label>{{ form.is_partner }}Is Partner?</label>
+    </div>
+  </div>
+</div>
+<div class="form-group {% if form.errors.partner %}has-error{% endif %}">
+  <label for="partner" class="control-label col-xs-2">Partner:</label>
+  <div class="col-xs-10">
+    {{ form.partner(class="form-control") }}
+    {% for err_msg in form.errors.partner %}
+    <span class="help-block">{{ err_msg }}</span>
+    {% endfor %}
+  </div>
+</div>
+<div class="form-group">
+  <div class="col-xs-offset-2 col-xs-10">
+    <div class="checkbox">
+      <label>{{ form.is_sponsored }}Is Sponsored?</label>
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="col-xs-offset-2 col-xs-10">
+    <div class="checkbox">
+      <label>{{ form.keep_formatting }}Keep Formatting?</label>
+    </div>
+  </div>
+</div>
