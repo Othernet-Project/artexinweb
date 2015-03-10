@@ -25,10 +25,13 @@ LICENSES = (
     ('ARL', "All rights reserved"),
     ('ON', "Other non-free license"),
 )
+LANGUAGE_CODES = [(lang_code, lang_label)
+                  for (lang_code, lang_label) in utils.collect_locales()
+                  if len(lang_code) < 3]
 
 
 class MetadataForm(form.Form):
-    language = fields.SelectField(choices=utils.collect_locales())
+    language = fields.SelectField(choices=LANGUAGE_CODES)
     license = fields.SelectField(choices=LICENSES)
     archive = fields.StringField()
     is_partner = fields.BooleanField(default=False)
