@@ -124,7 +124,7 @@ class StandaloneHandler(BaseJobHandler):
 
         timestamp = datetime.datetime.utcnow()
 
-        meta = {}
+        meta = options.get('meta', {})
         meta['title'] = self.read_title(target_dir)
         meta['images'] = self.count_images(target_dir)
         meta['timestamp'] = pack.serialize_datetime(timestamp)

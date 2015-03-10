@@ -30,7 +30,7 @@ LANGUAGE_CODES = [(lang_code, lang_label)
                   if len(lang_code) < 3]
 
 
-class MetadataForm(form.Form):
+class MetaForm(form.Form):
     language = fields.SelectField(choices=LANGUAGE_CODES)
     license = fields.SelectField(choices=LICENSES)
     archive = fields.StringField()
@@ -42,6 +42,15 @@ class MetadataForm(form.Form):
     def validate_partner(self, field):
         if self.is_partner.data and not field.data:
             raise validators.ValidationError("A partner must be specified")
+
+    def get_meta(self):
+        return {'language': self.language.data,
+                'license': self.license.data,
+                'archive': self.archive.data,
+                'is_partner': self.is_partner.data,
+                'partner': self.partner.data,
+                'is_sponsored': self.is_sponsored.data,
+                'keep_formatting': self.keep_formatting.data}
 
 
 def check_extension(form, field):
@@ -55,7 +64,7 @@ def check_extension(form, field):
         raise validators.ValidationError(msg)
 
 
-class StandaloneJobForm(MetadataForm):
+class StandaloneJobForm(MetaForm):
     origin = fields.StringField(validators=[validators.URL(require_tld=True)])
     files = fields.FileField(validators=[validators.InputRequired(),
                                          check_extension])
@@ -91,7 +100,7 @@ class URLListField(fields.TextAreaField):
                 raise validators.ValidationError("Invalid URL(s).")
 
 
-class FetchableJobForm(MetadataForm):
+class FetchableJobForm(MetaForm):
     urls = URLListField(validators=[validators.InputRequired()])
     javascript = fields.BooleanField(validators=[validators.optional()],
                                      default=True)

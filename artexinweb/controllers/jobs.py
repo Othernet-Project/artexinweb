@@ -39,10 +39,12 @@ class CreateJobController(object):
 
     @classmethod
     def fetchable(cls, job_type, form):
+        meta = form.get_meta()
         Job.create(job_type=job_type,
                    targets=form.urls.data,
                    extract=form.extract.data,
-                   javascript=form.javascript.data)
+                   javascript=form.javascript.data,
+                   meta=meta)
         return bottle.redirect('/jobs/')
 
     @classmethod
@@ -59,9 +61,11 @@ class CreateJobController(object):
             uploaded_file.save(upload_path)
             targets.append(upload_path)
 
-        Job.create(targets=targets,
-                   job_type=job_type,
-                   origin=form.origin.data)
+        meta = form.get_meta()
+        Job.create(job_type=job_type,
+                   targets=targets,
+                   origin=form.origin.data,
+                   meta=meta)
         return bottle.redirect('/jobs/')
 
     @classmethod

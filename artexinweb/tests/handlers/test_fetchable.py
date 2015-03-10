@@ -100,4 +100,5 @@ class TestFetchableHandler(BaseMongoTestCase):
                                         prep=fake_preps,
                                         base_dir=out_dir,
                                         javascript=True,
-                                        do_extract=True)
+                                        do_extract=True,
+                                        meta={})
