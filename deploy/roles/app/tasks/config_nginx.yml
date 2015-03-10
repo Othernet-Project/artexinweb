@@ -1,6 +1,6 @@
 ---
 
-- name: write nginx configuration
+- name: write app nginx configuration
   template:
     src: "{{ item }}.j2"
     dest: "/etc/nginx/sites-available/{{ item }}"
@@ -8,7 +8,7 @@
     - app.nginx.conf
   sudo: yes
 
-- name: enable nginx configuration
+- name: enable app nginx configuration
   file:
     src: "/etc/nginx/sites-available/{{ item }}"
     dest: "/etc/nginx/sites-enabled/{{ item }}"
@@ -16,6 +16,25 @@
   with_items:
     - app.nginx.conf
   sudo: yes
+
+- name: write zipballs nginx configuration (only in dev mode)
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/nginx/sites-available/{{ item }}"
+  with_items:
+    - zipballs.nginx.conf
+  sudo: yes
+  when: "'vagrant' in group_names"
+
+- name: enable zipballs nginx configuration (only in dev mode)
+  file:
+    src: "/etc/nginx/sites-available/{{ item }}"
+    dest: "/etc/nginx/sites-enabled/{{ item }}"
+    state: link
+  with_items:
+    - zipballs.nginx.conf
+  sudo: yes
+  when: "'vagrant' in group_names"
 
 - name: check if nginx has default symbolic linked website file
   stat: path=/etc/nginx/sites-enabled/default
