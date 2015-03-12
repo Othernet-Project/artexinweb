@@ -1,0 +1,18 @@
+branches:
+  only:
+    - master
+
+language: python
+
+python:
+  - 3.4
+
+install:
+  - pip install -r requirements.txt --use-mirrors
+  - pip install coveralls
+
+script: coverage run --omit="*/site-packages/*" --module py.test
+
+after_success:
+  - coverage report -m --omit="*/site-packages/*"
+  - coveralls
