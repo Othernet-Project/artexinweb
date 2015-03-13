@@ -9,6 +9,8 @@ import bottle
 from artexinweb import exceptions
 
 
+is_test_mode = lambda: sys.argv[0].endswith('py.test')
+
 WEBAPP_ROOT = dirname(__file__)
 VIEW_ROOT = join(WEBAPP_ROOT, 'views')
 DEV_STATIC_ROOT = join(WEBAPP_ROOT, 'static')
@@ -19,7 +21,7 @@ CONFIG_PATH = environ.get('CONFIG_PATH', DEFAULT_CONFIG_PATH)
 BOTTLE_CONFIG = bottle.ConfigDict()
 BOTTLE_CONFIG.load_config(CONFIG_PATH)
 
-if not BOTTLE_CONFIG:
+if not BOTTLE_CONFIG and not is_test_mode():
     raise exceptions.ImproperlyConfigured('Empty or no configuration found.')
 
 LOGGING = {
