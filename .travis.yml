@@ -2,6 +2,9 @@ branches:
   only:
     - master
 
+services:
+  - mongodb
+
 language: python
 
 python:
