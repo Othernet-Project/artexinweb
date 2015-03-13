@@ -50,7 +50,7 @@ class CreateJobController(object):
     @classmethod
     def standalone(cls, job_type, form):
         folder_name = str(uuid.uuid4())
-        media_root = settings.BOTTLE_CONFIG['web.media_root']
+        media_root = settings.BOTTLE_CONFIG.get('web.media_root', '')
         upload_dir = os.path.join(media_root, folder_name)
 
         os.makedirs(upload_dir)

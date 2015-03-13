@@ -102,8 +102,8 @@ class TestJobControllers(object):
         assert result == 'redir'
         assert job_create.call_count == 1
 
-        upload_dir = os.path.join(settings.BOTTLE_CONFIG['web.media_root'],
-                                  'test')
+        media_root = settings.BOTTLE_CONFIG.get('web.media_root', '')
+        upload_dir = os.path.join(media_root, 'test')
         file1_path = os.path.join(upload_dir, file1.filename)
         file2_path = os.path.join(upload_dir, file2.filename)
 
