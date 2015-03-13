@@ -1,6 +1,10 @@
 ==========
 ArtExInWeb
 ==========
+.. image:: https://travis-ci.org/Outernet-Project/artexinweb.svg?branch=master
+    :target: https://travis-ci.org/Outernet-Project/artexinweb
+
+.. image:: https://coveralls.io/repos/Outernet-Project/artexinweb/badge.svg?branch=master :target: https://coveralls.io/r/Outernet-Project/artexinweb?branch=master
 
 ArtExInWeb is a web application, providing an interface to control ArtExIn_.
 
