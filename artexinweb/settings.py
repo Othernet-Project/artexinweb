@@ -9,7 +9,7 @@ import bottle
 from artexinweb import exceptions
 
 
-is_test_mode = lambda: sys.argv[0].endswith('py.test')
+is_test_mode = lambda: 'py.test' in sys.argv or sys.argv[0].endswith('py.test')
 
 WEBAPP_ROOT = dirname(__file__)
 VIEW_ROOT = join(WEBAPP_ROOT, 'views')
