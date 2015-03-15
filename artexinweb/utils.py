@@ -2,6 +2,8 @@
 import hashlib
 import os
 import pkgutil
+import shutil
+import tempfile
 import zipfile
 
 import babel
@@ -69,3 +71,36 @@ def unzip(source_filename, dest_dir):
                 path = os.path.join(path, word)
 
             zf.extract(member, path)
+
+
+def remove_from_zip(zip_filepath, *removables):
+    """Repack a zip archive without the files specified in `removables`.
+
+    :param zip_filepath:  Full path to the repackable zip file
+    :param *removables:   Filenames to be removed from the source zipfile
+    """
+    tmp_dir = tempfile.mkdtemp()
+    try:
+        tmp_zipfile = os.path.join(tmp_dir, 'tmp.zip')
+        with zipfile.ZipFile(zip_filepath, 'r') as zip_read:
+            with zipfile.ZipFile(tmp_zipfile, 'w') as zip_write:
+                for item in zip_read.infolist():
+                    if item.filename not in removables:
+                        data = zip_read.read(item.filename)
+                        zip_write.writestr(item, data)
+
+        shutil.move(tmp_zipfile, zip_filepath)
+    finally:
+        shutil.rmtree(tmp_dir)
+
+
+def replace_in_zip(zip_filepath, **replacements):
+    """Replace the files specified in `replacements` in a zip file.
+
+    :param zip_filepath:    Full path to the zip file
+    :param **replacements:  Filename / data pairs
+    """
+    remove_from_zip(zip_filepath, *replacements.keys())
+    with zipfile.ZipFile(zip_filepath, 'w') as zip_write:
+        for filename, data in replacements.items():
+            zip_write.writestr(filename, data)
