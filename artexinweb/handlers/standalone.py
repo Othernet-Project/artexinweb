@@ -6,7 +6,6 @@ import os
 import shutil
 import tempfile
 import urllib
-import zipfile
 
 import bs4
 
@@ -22,28 +21,10 @@ from artexinweb.models import Job
 logger = logging.getLogger(__name__)
 
 
-def unzip(source_filename, dest_dir):
-    with zipfile.ZipFile(source_filename) as zf:
-        for member in zf.infolist():
-            # Path traversal defense copied from
-            # http://hg.python.org/cpython/file/tip/Lib/http/server.py#l765
-            words = member.filename.split('/')
-            path = dest_dir
-
-            for word in words[:-1]:
-                drive, word = os.path.splitdrive(word)
-                head, word = os.path.split(word)
-                if word in (os.curdir, os.pardir, ''):
-                    continue
-                path = os.path.join(path, word)
-
-            zf.extract(member, path)
-
-
 class StandaloneHandler(BaseJobHandler):
 
     extractors = {
-        'zip': unzip
+        'zip': utils.unzip
     }
 
     def is_html_file(self, filename):
@@ -55,12 +36,11 @@ class StandaloneHandler(BaseJobHandler):
             logger.error(msg)
             return False
 
-        with zipfile.ZipFile(target, 'r') as zf:
-            files = zf.namelist()
-            if not any(self.is_html_file(filename) for filename in files):
-                msg = "No HTML file found in: {0}".format(target)
-                logger.error(msg)
-                return False
+        files = utils.list_zipfile(target)
+        if not any(self.is_html_file(filename) for filename in files):
+            msg = "No HTML file found in: {0}".format(target)
+            logger.error(msg)
+            return False
 
         return True
 

@@ -28,16 +28,11 @@ class TestStandaloneHandler(BaseMongoTestCase):
         assert handler.is_html_file('test.gif') is False
         assert handler.is_html_file('start.html') is True
 
-    @mock.patch('zipfile.ZipFile')
+    @mock.patch('artexinweb.utils.list_zipfile')
     @mock.patch('os.path.isfile')
-    def test_is_valid_target_success(self, isfile, zipfile):
+    def test_is_valid_target_success(self, isfile, list_zipfile):
         isfile.return_value = True
-
-        zf = mock.MagicMock()
-        zf.namelist.return_value = ['test.jpg', 'index.html']
-        context = mock.MagicMock()
-        context.__enter__.return_value = zf
-        zipfile.return_value = context
+        list_zipfile.return_value = ['test.jpg', 'index.html']
 
         handler = StandaloneHandler()
         result = handler.is_valid_target(self.target)
@@ -55,16 +50,11 @@ class TestStandaloneHandler(BaseMongoTestCase):
         assert result is False
         isfile.assert_called_once_with(self.target)
 
-    @mock.patch('zipfile.ZipFile')
+    @mock.patch('artexinweb.utils.list_zipfile')
     @mock.patch('os.path.isfile')
-    def test_is_valid_target_no_html_in_zip(self, isfile, zipfile):
+    def test_is_valid_target_no_html_in_zip(self, isfile, list_zipfile):
         isfile.return_value = True
-
-        zf = mock.MagicMock()
-        zf.namelist.return_value = ['test.jpg', 'readme.txt']
-        context = mock.MagicMock()
-        context.__enter__.return_value = zf
-        zipfile.return_value = context
+        list_zipfile.return_value = ['test.jpg', 'readme.txt']
 
         handler = StandaloneHandler()
         result = handler.is_valid_target(self.target)
