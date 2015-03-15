@@ -58,16 +58,16 @@ class BaseJobHandler(object):
         if not self.is_valid_target(task.target):
             msg = "Task target {0} invalid. Marking it failed."
             logger.error(msg.format(task.target))
-            task.mark_failed()
+            task.mark_failed("Task target is invalid: {0}".format(task.target))
             return
 
         logger.info("Start processing of task {0}".format(task.target))
         try:
             result = self.handle_task(task, options)
-        except Exception:
+        except Exception as exc:
             msg = "Unhandled exception while processing task: {0}"
             logger.exception(msg.format(task.target))
-            task.mark_failed()
+            task.mark_failed("Unhandled exception: {0}".format(str(exc)))
         else:
             elapsed_time = time.process_time() - start_time
             msg = "Task {0} finished in {1} seconds."
@@ -75,10 +75,10 @@ class BaseJobHandler(object):
 
             try:
                 self.handle_task_result(task, result, options)
-            except Exception:
+            except Exception as exc:
                 msg = "Unhandled exception while processing task result: {0}"
                 logger.exception(msg.format(task.target))
-                task.mark_failed()
+                task.mark_failed("Unhandled exception: {0}".format(str(exc)))
             else:
                 msg = "Task result handling of {0} finished."
                 logger.info(msg.format(task.target))

@@ -46,6 +46,7 @@ class Task(mongoengine.Document):
     status = mongoengine.StringField(choices=STATUSES,
                                      default=QUEUED,
                                      help_text="Job status.")
+    notes = mongoengine.StringField(help_text="Arbitary information")
 
     @classmethod
     def create(cls, job_id, target):
@@ -94,8 +95,9 @@ class Task(mongoengine.Document):
         self.status = self.PROCESSING
         self.save()
 
-    def mark_failed(self):
+    def mark_failed(self, reason):
         self.status = self.FAILED
+        self.notes = reason
         self.save()
 
     def mark_finished(self):

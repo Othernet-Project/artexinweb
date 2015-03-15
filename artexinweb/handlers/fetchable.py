@@ -39,7 +39,7 @@ class FetchableHandler(BaseJobHandler):
         if error is not None:
             msg = "Error processing {0}: {1}".format(task.target, error)
             logger.error(msg)
-            task.mark_failed()
+            task.mark_failed("ArtExIn error: {0}".format(error))
             return
 
         task.size = result['size']

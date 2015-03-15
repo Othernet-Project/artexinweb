@@ -26,7 +26,7 @@ class TestBaseJobHandler(BaseMongoTestCase):
         task.mark_processing()
         assert handler.is_valid_task(task) is True
 
-        task.mark_failed()
+        task.mark_failed("failed")
         assert handler.is_valid_task(task) is True
 
         task.mark_finished()
@@ -69,7 +69,7 @@ class TestBaseJobHandler(BaseMongoTestCase):
                          javascript=True)
         # make second task failed, as real processing is skipped, it will
         # trigger failure on the whole process
-        job.tasks[1].mark_failed()
+        job.tasks[1].mark_failed("failed")
 
         handler = BaseJobHandler()
         handler.run({'type': job.job_type, 'id': job.job_id})
@@ -90,7 +90,7 @@ class TestBaseJobHandler(BaseMongoTestCase):
         with mock.patch.object(handler, 'is_valid_target', return_value=False):
             handler.process_task(task, {})
 
-            mark_failed.assert_called_once_with()
+            assert mark_failed.call_count == 1
             assert not handle_task.called
 
     @mock.patch('artexinweb.handlers.base.BaseJobHandler.handle_task_result')
@@ -130,7 +130,7 @@ class TestBaseJobHandler(BaseMongoTestCase):
 
             handle_task.assert_called_once_with(task, options)
             assert not handle_task_result.called
-            mark_failed.assert_called_once_with()
+            assert mark_failed.call_count == 1
 
     @mock.patch('artexinweb.handlers.base.BaseJobHandler.handle_task_result')
     @mock.patch('artexinweb.handlers.base.BaseJobHandler.handle_task')
@@ -154,4 +154,4 @@ class TestBaseJobHandler(BaseMongoTestCase):
             handle_task_result.assert_called_once_with(task,
                                                        task_result,
                                                        options)
-            mark_failed.assert_called_once_with()
+            assert mark_failed.call_count == 1

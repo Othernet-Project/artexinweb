@@ -47,7 +47,7 @@ class TestFetchableHandler(BaseMongoTestCase):
         handler.handle_task_result(task, result, options)
 
         assert not mark_finished.called
-        mark_failed.assert_called_once_with()
+        assert mark_failed.call_count == 1
 
     @mock.patch('artexinweb.models.Task.mark_finished')
     @mock.patch('artexinweb.models.Task.mark_failed')

@@ -143,7 +143,8 @@ class TestTaskModel(BaseMongoTestCase):
     def test_mark_queued(self):
         task = Task.create(self.job_id, self.task_target)
 
-        task.mark_failed()  # tasks are queued by default, so make it failed
+        # tasks are queued by default, so make it failed
+        task.mark_failed("error")
         assert task.is_queued is False
         task.mark_queued()
         assert task.is_queued is True
@@ -159,7 +160,7 @@ class TestTaskModel(BaseMongoTestCase):
         task = Task.create(self.job_id, self.task_target)
 
         assert task.is_failed is False
-        task.mark_failed()
+        task.mark_failed("error")
         assert task.is_failed is True
 
     def test_mark_finished(self):
