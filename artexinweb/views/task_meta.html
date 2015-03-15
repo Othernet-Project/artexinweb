@@ -1,0 +1,21 @@
+{% extends "app.html" %}
+
+{% block content %}
+<div class="container-fluid job-editor centered">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1 class="page-header">Edit meta information</h1>
+      <form action="/jobs/{{ task.job_id }}/tasks/{{ task.md5 }}/actions/meta/" method="POST" class="form-horizontal">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+        {% include "job_meta.html" %}
+        <div class="form-group">
+          <div class="col-xs-offset-2 col-xs-10">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a class="btn btn-default" href="/jobs/">Cancel</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}

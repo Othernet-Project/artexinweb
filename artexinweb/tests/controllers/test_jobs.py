@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import copy
+import io
+import json
 import os
 
 from unittest import mock
@@ -281,3 +284,114 @@ class TestJobControllers(object):
         result = jobs_details('job_id')
 
         assert result == {'job': mocked_job}
+
+    @mock.patch('bottle.jinja2_template')
+    @mock.patch('bottle.request')
+    @mock.patch('artexinweb.utils.read_from_zip')
+    @mock.patch('artexinweb.controllers.jobs.MetaForm')
+    @mock.patch('artexinweb.models.jobs.Task.objects')
+    def test_task_meta_edit_read(self, task_objects, meta_form, read_from_zip,
+                                 bottle_request, jinja2_template):
+        from artexinweb.controllers.jobs import task_meta_edit
+        bottle_request.method = 'GET'
+        zipball_path = '/srv/zipballs/some_id.zip'
+
+        form = mock.Mock()
+        meta_form.return_value = form
+
+        task_id = 'task_id'
+        meta = {'language': 'en',
+                'license': 'GFDL'}
+        meta_filename = '{0}/info.json'.format(task_id)
+
+        task = mock.Mock(zipball_path=zipball_path)
+        task_objects.get.return_value = task
+
+        meta_bytes = json.dumps(meta).encode('utf-8')
+        read_from_zip.return_value = io.BytesIO(meta_bytes)
+
+        task_meta_edit('job_id', task_id)
+
+        read_from_zip.assert_called_once_with(zipball_path, meta_filename)
+        jinja2_template.assert_called_once_with('task_meta.html',
+                                                form=form,
+                                                meta=meta,
+                                                task=task)
+
+    @mock.patch('bottle.redirect')
+    @mock.patch('bottle.request')
+    @mock.patch('artexinweb.utils.replace_in_zip')
+    @mock.patch('artexinweb.utils.read_from_zip')
+    @mock.patch('artexinweb.controllers.jobs.MetaForm')
+    @mock.patch('artexinweb.models.jobs.Task.objects')
+    def test_task_meta_edit_form_valid(self, task_objects, meta_form,
+                                       read_from_zip, replace_in_zip,
+                                       bottle_request, bottle_redirect):
+        from artexinweb.controllers.jobs import task_meta_edit
+        bottle_request.method = 'POST'
+        zipball_path = '/srv/zipballs/some_id.zip'
+
+        form_data = {'language': 'de'}
+        form = mock.Mock(data=form_data)
+        form.validate.return_value = True
+        meta_form.return_value = form
+
+        task_id = 'task_id'
+        job_id = 'job_id'
+        meta = {'language': 'en',
+                'license': 'GFDL'}
+        meta_filename = '{0}/info.json'.format(task_id)
+
+        task = mock.Mock(zipball_path=zipball_path)
+        task_objects.get.return_value = task
+
+        meta_bytes = json.dumps(meta).encode('utf-8')
+        read_from_zip.return_value = io.BytesIO(meta_bytes)
+
+        task_meta_edit(job_id, task_id)
+
+        read_from_zip.assert_called_once_with(zipball_path, meta_filename)
+
+        merged_meta = copy.copy(meta)
+        merged_meta.update(form_data)
+        replacements = {meta_filename: json.dumps(merged_meta)}
+        replace_in_zip.assert_called_once_with(zipball_path, **replacements)
+
+        task_list_url = '/jobs/{0}/tasks/'.format(job_id)
+        bottle_redirect.assert_called_once_with(task_list_url)
+
+    @mock.patch('bottle.jinja2_template')
+    @mock.patch('bottle.request')
+    @mock.patch('artexinweb.utils.read_from_zip')
+    @mock.patch('artexinweb.controllers.jobs.MetaForm')
+    @mock.patch('artexinweb.models.jobs.Task.objects')
+    def test_task_meta_edit_form_not_valid(self, task_objects, meta_form,
+                                           read_from_zip, bottle_request,
+                                           jinja2_template):
+        from artexinweb.controllers.jobs import task_meta_edit
+        bottle_request.method = 'POST'
+        zipball_path = '/srv/zipballs/some_id.zip'
+
+        form = mock.Mock()
+        form.validate.return_value = False
+        meta_form.return_value = form
+
+        task_id = 'task_id'
+        job_id = 'job_id'
+        meta = {'language': 'en',
+                'license': 'GFDL'}
+        meta_filename = '{0}/info.json'.format(task_id)
+
+        task = mock.Mock(zipball_path=zipball_path)
+        task_objects.get.return_value = task
+
+        meta_bytes = json.dumps(meta).encode('utf-8')
+        read_from_zip.return_value = io.BytesIO(meta_bytes)
+
+        task_meta_edit(job_id, task_id)
+
+        read_from_zip.assert_called_once_with(zipball_path, meta_filename)
+        jinja2_template.assert_called_once_with('task_meta.html',
+                                                form=form,
+                                                meta=meta,
+                                                task=task)

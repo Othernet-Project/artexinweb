@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
+import codecs
+import json
 import os
 import uuid
 
 import bottle
 
-from artexinweb import settings
-from artexinweb.forms import FetchableJobForm, StandaloneJobForm
-from artexinweb.models import Job
+from artexinweb import settings, utils
+from artexinweb.forms import FetchableJobForm, StandaloneJobForm, MetaForm
+from artexinweb.models import Job, Task
 
 
 @bottle.get('/')
@@ -134,3 +136,29 @@ def jobs_details(job_id):
 def task_list(job_id):
     job = Job.objects.get(job_id=job_id)
     return {'task_list': job.tasks, 'job_id': job_id}
+
+
+@bottle.route('/jobs/<job_id:re:[a-zA-Z0-9]+>/tasks/<task_id:re:[a-zA-Z0-9]+>/actions/meta/',  # NOQA
+              method=['GET', 'POST'])
+def task_meta_edit(job_id, task_id):
+    task = Task.objects.get(job_id=job_id, md5=task_id)
+    meta_filename = '{0}/info.json'.format(task_id)
+    meta_bytes = utils.read_from_zip(task.zipball_path, meta_filename)
+    reader = codecs.getreader("utf-8")
+    meta = json.load(reader(meta_bytes))
+
+    if bottle.request.method == 'POST':
+        form_data = bottle.request.forms.decode()
+        form = MetaForm(form_data)
+        if form.validate():
+            meta.update(form.data)
+            replacements = {meta_filename: json.dumps(meta)}
+            utils.replace_in_zip(task.zipball_path, **replacements)
+            return bottle.redirect('/jobs/{0}/tasks/'.format(job_id))
+    else:
+        form = MetaForm(**meta)
+
+    return bottle.jinja2_template('task_meta.html',
+                                  form=form,
+                                  meta=meta,
+                                  task=task)

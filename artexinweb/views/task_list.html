@@ -17,6 +17,7 @@
               <th>Timestamp</th>
               <th>Status</th>
               <th>Link</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -30,6 +31,7 @@
               <td>{{ task.timestamp }}</td>
               <td>{{ task.status }}</td>
               <td>{% if task.is_finished %}<a href="{{ task.download_link }}">Download</a>{% endif %}</td>
+              <td>{% if task.is_finished %}<a href="/jobs/{{ task.job_id }}/tasks/{{ task.md5 }}/actions/meta/">Edit meta</a>{% endif %}</td>
             </tr>
           {% endfor %}
           </tbody>
