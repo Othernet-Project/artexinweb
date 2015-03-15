@@ -101,6 +101,6 @@ def replace_in_zip(zip_filepath, **replacements):
     :param **replacements:  Filename / data pairs
     """
     remove_from_zip(zip_filepath, *replacements.keys())
-    with zipfile.ZipFile(zip_filepath, 'w') as zip_write:
+    with zipfile.ZipFile(zip_filepath, 'a') as zip_write:
         for filename, data in replacements.items():
             zip_write.writestr(filename, data)
