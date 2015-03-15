@@ -66,10 +66,21 @@ def check_extension(form, field):
         raise validators.ValidationError(msg)
 
 
+def has_html_file(form, field):
+    is_html_file = lambda fn: any(fn.endswith(ext) for ext in ('htm', 'html'))
+    files = utils.list_zipfile(field.data.file)
+    if not any(is_html_file(filename) for filename in files):
+        msg = "No HTML file found in: {0}".format(field.data.filename)
+        raise validators.ValidationError(msg)
+    # must seek to the beginning of file to save them properly
+    field.data.file.seek(0)
+
+
 class StandaloneJobForm(MetaForm):
     origin = fields.StringField(validators=[validators.URL(require_tld=True)])
     files = fields.FileField(validators=[validators.InputRequired(),
-                                         check_extension])
+                                         check_extension,
+                                         has_html_file])
 
 
 class URLListField(fields.TextAreaField):
