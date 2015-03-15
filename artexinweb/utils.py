@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import hashlib
+import io
 import os
 import pkgutil
 import shutil
@@ -104,3 +105,15 @@ def replace_in_zip(zip_filepath, **replacements):
     with zipfile.ZipFile(zip_filepath, 'a') as zip_write:
         for filename, data in replacements.items():
             zip_write.writestr(filename, data)
+
+
+def read_from_zip(zip_filepath, filename):
+    """Return the contents of `filename` from the specified zip file.
+
+    :param zip_filepath:  Full path to the zip file
+    :param filename:      The filename to be read from the zip file
+    :returns:             BytesIO object with contents of the `filename`
+    """
+    with zipfile.ZipFile(zip_filepath) as zip_file:
+        with zip_file.open(filename) as readable_file:
+            return io.BytesIO(readable_file.read())
