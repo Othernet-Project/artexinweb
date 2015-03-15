@@ -197,6 +197,60 @@ class TestStandaloneHandler(BaseMongoTestCase):
 
         assert isinstance(result['timestamp'], datetime.datetime)
 
+    @mock.patch('shutil.rmtree')
+    @mock.patch('artexin.pack.create_zipball')
+    @mock.patch('artexinweb.handlers.standalone.StandaloneHandler.count_images')  # NOQA
+    @mock.patch('artexinweb.handlers.standalone.StandaloneHandler.read_title')
+    @mock.patch('artexinweb.handlers.standalone.StandaloneHandler.extract_target')  # NOQA
+    def test_handle_task_override_title(self, extract_target, read_title,
+                                        count_images, create_zipball,
+                                        shutil_rmtree):
+        options = {'origin': self.origin,
+                   'meta': {'title': 'overridden'}}
+        task = Task.create(self.job_id, self.target)
+
+        handler = StandaloneHandler()
+
+        expected_meta = {'title': 'overridden',
+                         'images': 4,
+                         'url': self.origin,
+                         'domain': urllib.parse.urlparse(self.origin).netloc}
+
+        extract_target.return_value = self.temp_dir
+        read_title.return_value = 'title actually found'
+        count_images.return_value = expected_meta['images']
+
+        def mocked_create_zipball(*args, **kwargs):
+            return kwargs['meta']
+        create_zipball.side_effect = mocked_create_zipball
+
+        mock_settings = {'artexin.out_dir': '/test/out'}
+        with mock_bottle_config('artexinweb.settings.BOTTLE_CONFIG',
+                                mock_settings):
+            result = handler.handle_task(task, options)
+
+        for call_arg in create_zipball.call_args:
+            if isinstance(call_arg, dict):
+                assert call_arg['src_dir'] == self.temp_dir
+                assert call_arg['out_dir'] == mock_settings['artexin.out_dir']
+                for key, value in expected_meta.items():
+                    assert call_arg['meta'][key] == value
+
+                assert isinstance(call_arg['meta']['timestamp'],
+                                  datetime.datetime)
+
+        extract_target.assert_called_once_with(task.target)
+        assert read_title.called is False
+        count_images.assert_called_once_with(self.temp_dir)
+        shutil_rmtree.assert_called_once_with(self.temp_dir)
+
+        assert len(result) == len(expected_meta) + 1
+
+        for key, value in expected_meta.items():
+            assert result[key] == value
+
+        assert isinstance(result['timestamp'], datetime.datetime)
+
     @mock.patch('artexinweb.models.Task.mark_finished')
     def test_handle_task_result(self, mark_finished):
         task = Task.create(self.job_id, self.temp_dir)

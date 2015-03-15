@@ -1,3 +1,12 @@
+<div class="form-group {% if form.errors.title %}has-error{% endif %}">
+  <label for="title" class="control-label col-xs-2">Title:</label>
+  <div class="col-xs-10">
+    {{ form.title(class="form-control") }}
+    {% for err_msg in form.errors.title %}
+    <span class="help-block">{{ err_msg }}</span>
+    {% endfor %}
+  </div>
+</div>
 <div class="form-group {% if form.errors.language %}has-error{% endif %}">
   <label for="language" class="control-label col-xs-2">Language:</label>
   <div class="col-xs-10">

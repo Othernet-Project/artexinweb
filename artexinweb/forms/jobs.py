@@ -31,6 +31,7 @@ LANGUAGE_CODES = [(lang_code, lang_label)
 
 
 class MetaForm(form.Form):
+    title = fields.StringField()
     language = fields.SelectField(choices=LANGUAGE_CODES)
     license = fields.SelectField(choices=LICENSES)
     archive = fields.StringField()
@@ -44,7 +45,8 @@ class MetaForm(form.Form):
             raise validators.ValidationError("A partner must be specified")
 
     def get_meta(self):
-        return {'language': self.language.data,
+        return {'title': self.title.data,
+                'language': self.language.data,
                 'license': self.license.data,
                 'archive': self.archive.data,
                 'is_partner': self.is_partner.data,

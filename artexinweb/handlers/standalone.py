@@ -76,7 +76,8 @@ class StandaloneHandler(BaseJobHandler):
         meta = options.get('meta', {})
         meta['url'] = options['origin']
         meta['domain'] = urllib.parse.urlparse(options['origin']).netloc
-        meta['title'] = self.read_title(temp_dir)
+        # pre-specified title has precedence
+        meta['title'] = meta.get('title') or self.read_title(temp_dir)
         meta['images'] = self.count_images(temp_dir)
         meta['timestamp'] = datetime.datetime.utcnow()
 
