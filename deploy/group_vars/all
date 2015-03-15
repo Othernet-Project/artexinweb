@@ -9,7 +9,7 @@ zip_root: /srv/zipballs
 
 app_name: artexin
 
-code_repository: https://github.com/integricho/artexinweb.git
+code_repository: https://github.com/Outernet-Project/artexinweb.git
 
 app_code_dir: "/home/{{ deploy_user }}/{{ app_name }}"
 webapp_dir: "{{ app_code_dir }}/artexinweb"
