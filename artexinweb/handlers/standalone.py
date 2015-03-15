@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import datetime
-import json
 import imghdr
 import logging
 import os
@@ -78,70 +77,35 @@ class StandaloneHandler(BaseJobHandler):
             msg = "Unsupported extension: {0}".format(src_filepath)
             raise exceptions.TaskHandlingError(msg)
 
-    def extract_target(self, src_filepath, task_hash):
+    def extract_target(self, src_filepath):
         """Extract the passed in archive to a temporary folder for further
         processing.
 
         :param src_filepath:  Full path of the to-be-extraced archive
-        :param task_hash:     String - unique hash of the task
         :returns:             Full path to the destionation directory
         """
         extract = self.get_extractor(src_filepath)
-
         temp_dir = tempfile.mkdtemp()
-        dest_dir = os.path.join(temp_dir, task_hash)
+        extract(src_filepath, temp_dir)
 
-        os.makedirs(dest_dir)
-
-        extract(src_filepath, dest_dir)
-
-        return dest_dir
-
-    def archive_target(self, zippable_dir):
-        """Zip the passed in folder and delete it after zipping. Use the last
-        part of the path as the zip filename.
-
-        :param zippable_dir:  Full path to the folder to-be-zipped
-        :returns:             Full path to the newly created zip file
-        """
-        temp_dir = os.path.dirname(zippable_dir)
-        zip_filename = os.path.basename(os.path.normpath(zippable_dir))
-        # path of the output file, including the filename itself
-        zip_file_path = os.path.join(settings.BOTTLE_CONFIG['artexin.out_dir'],
-                                     '{0}.zip'.format(zip_filename))
-        pack.zipdir(zip_file_path, zippable_dir)
-        # remove the temp folder (containing the previously zipped folder),
-        # since the zip file is created, it is no longer needed
-        shutil.rmtree(temp_dir)
-
-        return zip_file_path
+        return temp_dir
 
     def handle_task(self, task, options):
-        origin = options['origin']
-        origin_hash = utils.hash_data([origin])
-
-        target_dir = self.extract_target(task.target, origin_hash)
-
-        timestamp = datetime.datetime.utcnow()
+        temp_dir = self.extract_target(task.target)
 
         meta = options.get('meta', {})
-        meta['title'] = self.read_title(target_dir)
-        meta['images'] = self.count_images(target_dir)
-        meta['timestamp'] = pack.serialize_datetime(timestamp)
+        meta['url'] = options['origin']
+        meta['domain'] = urllib.parse.urlparse(options['origin']).netloc
+        meta['title'] = self.read_title(temp_dir)
+        meta['images'] = self.count_images(temp_dir)
+        meta['timestamp'] = datetime.datetime.utcnow()
 
-        meta['url'] = origin
-        meta['domain'] = urllib.parse.urlparse(origin).netloc
+        out_dir = settings.BOTTLE_CONFIG['artexin.out_dir']
+        meta = pack.create_zipball(src_dir=temp_dir,
+                                   meta=meta,
+                                   out_dir=out_dir)
 
-        meta_filepath = os.path.join(target_dir, 'info.json')
-        with open(meta_filepath, 'w', encoding='utf-8') as meta_file:
-            meta_file.write(json.dumps(meta, indent=2))
-
-        zip_file_path = self.archive_target(target_dir)
-
-        meta['size'] = os.stat(zip_file_path).st_size
-        meta['hash'] = origin_hash
-        # overwrite string timestamp with real datetime object
-        meta['timestamp'] = timestamp
+        shutil.rmtree(temp_dir)
 
         return meta
 
