@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import os
 
 import mongoengine
 
@@ -78,6 +79,12 @@ class Task(mongoengine.Document):
     def download_link(self):
         url_template = settings.BOTTLE_CONFIG['artexin.zipball_url_template']
         return url_template.format(self.md5)
+
+    @property
+    def zipball_path(self):
+        zipball_root = settings.BOTTLE_CONFIG['artexin.out_dir']
+        filename = '{0}.zip'.format(self.md5)
+        return os.path.join(zipball_root, filename)
 
     def mark_queued(self):
         self.status = self.QUEUED
