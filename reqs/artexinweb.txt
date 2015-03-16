@@ -9,4 +9,4 @@ babel==1.3
 wtforms==2.0.2
 redis==2.10.3
 git+https://github.com/integricho/hotqueue#egg=hotqueue
-git+https://github.com/Outernet-Project/artexin#egg=artexin
+git+git://github.com/Outernet-Project/artexin@master#egg=artexin
