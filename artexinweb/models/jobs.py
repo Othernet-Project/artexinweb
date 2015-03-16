@@ -102,6 +102,7 @@ class Task(mongoengine.Document):
 
     def mark_finished(self):
         self.status = self.FINISHED
+        self.notes = ''
         self.save()
 
 

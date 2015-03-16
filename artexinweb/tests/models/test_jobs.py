@@ -165,7 +165,10 @@ class TestTaskModel(BaseMongoTestCase):
 
     def test_mark_finished(self):
         task = Task.create(self.job_id, self.task_target)
+        task.notes = 'test'
+        task.save()
 
         assert task.is_finished is False
         task.mark_finished()
         assert task.is_finished is True
+        assert task.notes == ''
