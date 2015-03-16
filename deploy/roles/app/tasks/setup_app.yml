@@ -70,18 +70,13 @@
   shell: "{{ virtualenv_dir }}/exec.sh {{ virtualenv_dir }}/bin/python -m nltk.downloader all"
   remote_user: "{{ deploy_user }}"
 
-- name: check if zip directory exists
-  stat: "path={{ zip_root }}"
-  register: zip_dir
-
-- name: create zip directory
+- name: make sure zip directory exists and has correct owner/permissions
   file:
     path: "{{ zip_root }}"
     owner: "{{ deploy_user }}"
     group: "{{ nginx_group }}"
     state: directory
     mode: 0755
-  when: zip_dir.stat.isdir is not defined
   sudo: yes
 
 - name: check if media directory exists
