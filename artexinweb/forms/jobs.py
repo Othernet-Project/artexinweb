@@ -63,7 +63,7 @@ def check_extension(form, field):
 
     if ext not in valid:
         msg = "Only {0} files are allowed.".format(",".join(valid))
-        raise validators.ValidationError(msg)
+        raise validators.StopValidation(msg)
 
 
 def has_html_file(form, field):
@@ -71,7 +71,7 @@ def has_html_file(form, field):
     files = utils.list_zipfile(field.data.file)
     if not any(is_html_file(filename) for filename in files):
         msg = "No HTML file found in: {0}".format(field.data.filename)
-        raise validators.ValidationError(msg)
+        raise validators.StopValidation(msg)
     # must seek to the beginning of file to save them properly
     field.data.file.seek(0)
 
