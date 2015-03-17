@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import codecs
 import datetime
 import imghdr
 import logging
@@ -109,7 +110,8 @@ class StandaloneHandler(BaseJobHandler):
             # fall back to any available html file
             index_filename = html_files[0]
 
-        with open(os.path.join(target_dir, index_filename), 'r') as html_file:
+        html_path = os.path.join(target_dir, index_filename)
+        with codecs.open(html_path, 'r', 'utf-8') as html_file:
             soup = bs4.BeautifulSoup(html_file.read())
 
         return extract.get_title(soup)

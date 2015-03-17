@@ -115,11 +115,11 @@ class TestStandaloneHandler(BaseMongoTestCase):
         handler = StandaloneHandler()
 
         m_open = mock.mock_open()
-        with mock.patch('builtins.open', m_open):
+        with mock.patch('codecs.open', m_open):
             result = handler.read_title(self.temp_dir)
 
         html_path = os.path.join(self.temp_dir, expected_html_file)
-        m_open.assert_called_once_with(html_path, 'r')
+        m_open.assert_called_once_with(html_path, 'r', 'utf-8')
 
         file_handle = m_open()
         file_handle.read.assert_called_once_with()
