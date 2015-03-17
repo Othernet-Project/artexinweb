@@ -4,7 +4,7 @@ import os
 
 import mongoengine
 
-from artexinweb import rqueue, utils, settings
+from artexinweb import worker, utils, settings
 
 
 MD5_LENGTH = 32
@@ -126,8 +126,6 @@ class Job(mongoengine.Document):
         (FETCHABLE, "Fetchable")
     )
 
-    queue_class = rqueue.RedisQueue
-
     job_id = mongoengine.StringField(required=True,
                                      primary_key=True,
                                      max_length=MD5_LENGTH,
@@ -214,8 +212,7 @@ class Job(mongoengine.Document):
 
     def schedule(self):
         """Schedule the job for processing by a background worker."""
-        queue = self.queue_class()
-        queue.put({'type': self.job_type, 'id': self.job_id})
+        worker.dispatch({'type': self.job_type, 'id': self.job_id})
 
     def retry(self):
         """Retry a previously failed job."""

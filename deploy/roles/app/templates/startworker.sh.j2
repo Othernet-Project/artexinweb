@@ -14,7 +14,7 @@
 
 PY={{ virtualenv_dir }}/bin/python
 SRCDIR={{ app_code_dir }}
-APPMOD="{{ webapp_dir }}/worker.py"
+APPMOD="{{ virtualenv_dir }}/bin/huey_consumer.py artexinweb.app.huey"
 
 source {{ virtualenv_dir }}/bin/activate
 cd $SRCDIR

@@ -32,7 +32,7 @@ class TestBaseJobHandler(BaseMongoTestCase):
         task.mark_finished()
         assert handler.is_valid_task(task) is False
 
-    @mock.patch('artexinweb.models.jobs.Job.queue_class')
+    @mock.patch('artexinweb.worker.dispatch')
     @mock.patch('artexinweb.handlers.base.BaseJobHandler.process_task')
     @mock.patch('artexinweb.models.Job.mark_finished')
     @mock.patch('artexinweb.models.Job.mark_erred')
@@ -56,7 +56,7 @@ class TestBaseJobHandler(BaseMongoTestCase):
         calls = [mock.call(job.tasks[0], job.options)]
         process_task.assert_has_calls(calls)
 
-    @mock.patch('artexinweb.models.jobs.Job.queue_class')
+    @mock.patch('artexinweb.worker.dispatch')
     @mock.patch('artexinweb.handlers.base.BaseJobHandler.process_task')
     @mock.patch('artexinweb.models.Job.mark_finished')
     @mock.patch('artexinweb.models.Job.mark_erred')

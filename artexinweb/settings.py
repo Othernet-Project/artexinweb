@@ -6,6 +6,8 @@ from os.path import dirname, join
 
 import bottle
 
+from huey import RedisHuey
+
 from artexinweb import exceptions
 
 
@@ -50,3 +52,8 @@ LOGGING = {
         }
     }
 }
+
+huey = RedisHuey('job_queue',
+                 host=BOTTLE_CONFIG['redis.host'],
+                 port=BOTTLE_CONFIG['redis.port'],
+                 password=BOTTLE_CONFIG['redis.password'])

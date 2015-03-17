@@ -1,26 +1,10 @@
 # -*- coding: utf-8 -*-
-import logging.config
-
-import mongoengine
-
-from artexinweb import handlers
-from artexinweb import rqueue
-from artexinweb import settings
-from artexinweb import utils
 from artexinweb.decorators import registered
+from artexinweb.settings import huey
 
 
-logging.config.dictConfig(settings.LOGGING)
-
-mongoengine.connect('', host=settings.BOTTLE_CONFIG['database.url'])
-rqueue.RedisQueue.setup(settings.BOTTLE_CONFIG)
-queue = rqueue.RedisQueue()
-
-utils.discover(handlers)
-
-
-@queue.worker
-def dispatcher(message):
+@huey.task()
+def dispatch(message):
     try:
         handlers = registered.handlers[message.pop('type', None)]
     except KeyError:
@@ -28,6 +12,3 @@ def dispatcher(message):
     else:
         for hander_func in handlers:
             hander_func(message)
-
-
-dispatcher()
