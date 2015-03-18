@@ -54,6 +54,6 @@ LOGGING = {
 }
 
 huey = RedisHuey('job_queue',
-                 host=BOTTLE_CONFIG['redis.host'],
-                 port=BOTTLE_CONFIG['redis.port'],
-                 password=BOTTLE_CONFIG['redis.password'])
+                 host=BOTTLE_CONFIG.get('redis.host', '127.0.0.1'),
+                 port=BOTTLE_CONFIG.get('redis.port', 6379),
+                 password=BOTTLE_CONFIG.get('redis.password', ''))
